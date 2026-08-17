@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Steep & Co.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1E2A22;
+    --paper:#F1EFE4;
+    --moss:#3B5240;
+    --moss-dark:#2A3B2E;
+    --gold:#C0903F;
+    --clay:#8B4A3C;
+    --mist:#DCE3D5;
+    --card:#FBFAF5;
+    --danger:#A8402F;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{
+    background: #EAE6D8;
+    font-family:'Work Sans',sans-serif;
+    color:var(--ink);
+    display:flex;
+    align-items:flex-start;
+    justify-content:center;
+    min-height:100vh;
+    padding:28px 12px;
+  }
+  .device{
+    width:390px;
+    max-width:100%;
+    height:800px;
+    background:var(--paper);
+    border-radius:40px;
+    border:8px solid var(--ink);
+    box-shadow:0 30px 60px -20px rgba(30,42,34,0.45);
+    overflow:hidden;
+    position:relative;
+    display:flex;
+    flex-direction:column;
+  }
+  .statusbar{
+    height:34px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 22px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    color:var(--ink);
+    flex-shrink:0;
+  }
+  .notch{
+    position:absolute;
+    top:0; left:50%; transform:translateX(-50%);
+    width:130px; height:22px;
+    background:var(--ink);
+    border-radius:0 0 16px 16px;
+    z-index:20;
+  }
+  .screen{
+    flex:1;
+    overflow-y:auto;
+    padding:4px 20px 100px 20px;
+    position:relative;
+    scrollbar-width:none;
+  }
+  .screen::-webkit-scrollbar{display:none;}
+
+  .brand{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    margin:10px 0 2px 0;
+  }
+  .wordmark{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:28px;
+    letter-spacing:-0.5px;
+    color:var(--moss-dark);
+  }
+  .tagline{
+    font-size:11px;
+    color:var(--moss);
+    font-family:'JetBrains Mono',monospace;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    margin-bottom:16px;
+  }
+
+  .chips{
+    display:flex;
+    gap:8px;
+    overflow-x:auto;
+    padding-bottom:14px;
+    margin-bottom:6px;
+    scrollbar-width:none;
+  }
+  .chips::-webkit-scrollbar{display:none;}
+  .chip{
+    flex-shrink:0;
+    padding:7px 14px;
+    border-radius:100px;
+    background:var(--mist);
+    color:var(--moss-dark);
+    font-size:12.5px;
+    font-weight:600;
+    border:1px solid transparent;
+    cursor:pointer;
+    transition:all .15s ease;
+    white-space:nowrap;
+  }
+  .chip.active{
+    background:var(--moss-dark);
+    color:var(--paper);
+  }
+
+  .tea-card{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    background:var(--card);
+    border:1px solid #E4E0D0;
+    border-radius:18px;
+    padding:12px;
+    margin-bottom:10px;
+    cursor:pointer;
+    transition:transform .12s ease, box-shadow .12s ease;
+  }
+  .tea-card:active{ transform:scale(0.98); }
+  .liquor{
+    width:52px;height:52px;border-radius:50%;
+    flex-shrink:0;
+    box-shadow: inset 0 -6px 10px rgba(0,0,0,0.18), inset 0 3px 6px rgba(255,255,255,0.35);
+    border:2px solid rgba(30,42,34,0.15);
+  }
+  .liquor.lg{ width:118px;height:118px; margin:6px auto 14px auto; box-shadow: inset 0 -14px 24px rgba(0,0,0,0.2), inset 0 6px 14px rgba(255,255,255,0.4); border-width:3px;}
+  .tea-info{ flex:1; min-width:0; }
+  .tea-name{ font-family:'Fraunces',serif; font-weight:600; font-size:16.5px; color:var(--ink); }
+  .tea-origin{ font-size:11.5px; color:#6B7A6C; margin-top:1px; }
+  .tea-meta{ display:flex; align-items:center; gap:8px; margin-top:6px; }
+  .tag{
+    font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:.04em;
+    color:var(--moss-dark); background:var(--mist); padding:2px 7px; border-radius:6px;
+  }
+  .price{
+    font-family:'JetBrains Mono',monospace;
+    font-size:13px; font-weight:500; color:var(--clay);
+  }
+  .add-btn{
+    width:32px;height:32px;border-radius:50%;
+    background:var(--moss-dark); color:var(--paper);
+    border:none; font-size:18px; display:flex;align-items:center;justify-content:center;
+    flex-shrink:0; cursor:pointer;
+  }
+  .stock-out{ color:var(--danger); font-size:10.5px; font-weight:600; }
+
+  .empty{
+    text-align:center; padding:80px 20px 20px 20px; color:#7C8A7D;
+  }
+  .empty .glyph{ font-family:'Fraunces',serif; font-size:44px; color:var(--mist); margin-bottom:10px;}
+  .empty h3{ font-family:'Fraunces',serif; color:var(--moss-dark); margin:0 0 6px 0; font-size:18px;}
+  .empty p{ font-size:13px; margin:0; line-height:1.5;}
+
+  /* bottom nav */
+  .navbar{
+    position:absolute; bottom:0; left:0; right:0;
+    height:78px;
+    background:rgba(241,239,228,0.92);
+    backdrop-filter:blur(10px);
+    border-top:1px solid #DFDBC9;
+    display:flex;
+    padding-bottom:16px;
+    z-index:15;
+  }
+  .navitem{
+    flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:3px; cursor:pointer; color:#8A9389; position:relative;
+  }
+  .navitem.active{ color:var(--moss-dark); }
+  .navitem span{ font-size:10.5px; font-weight:600; }
+  .badge{
+    position:absolute; top:-2px; right:calc(50% - 20px);
+    background:var(--clay); color:#fff; font-size:9px; font-weight:700;
+    min-width:15px; height:15px; border-radius:8px;
+    display:flex;align-items:center;justify-content:center; padding:0 3px;
+  }
+
+  /* sheet */
+  .sheet-backdrop{
+    position:absolute; inset:0; background:rgba(20,26,20,0.45);
+    z-index:30; display:none;
+  }
+  .sheet-backdrop.open{ display:block; }
+  .sheet{
+    position:absolute; left:0; right:0; bottom:0;
+    background:var(--paper);
+    border-radius:26px 26px 0 0;
+    max-height:88%;
+    overflow-y:auto;
+    padding:16px 20px 28px 20px;
+    transform:translateY(100%);
+    transition:transform .28s cubic-bezier(.32,.72,0,1);
+    z-index:31;
+  }
+  .sheet.open{ transform:translateY(0); }
+  .sheet-handle{ width:36px;height:4px;background:#D8D3C0;border-radius:3px;margin:0 auto 14px auto; }
+  .sheet-close{
+    position:absolute; top:16px; right:18px; background:none;border:none;
+    font-size:20px; color:#8A9389; cursor:pointer;
+  }
+
+  .field{ margin-bottom:12px; }
+  .field label{ display:block; font-size:11px; font-weight:600; color:var(--moss-dark); text-transform:uppercase; letter-spacing:.04em; margin-bottom:5px;}
+  .field input, .field select, .field textarea{
+    width:100%; padding:10px 12px; border-radius:10px; border:1.5px solid #DFDBC9;
+    background:#fff; font-family:'Work Sans',sans-serif; font-size:14px; color:var(--ink);
+  }
+  .field textarea{ resize:vertical; min-height:60px; }
+  .row2{ display:flex; gap:10px; }
+  .row2 .field{ flex:1; }
+
+  .btn{
+    width:100%; padding:13px; border-radius:12px; border:none;
+    font-weight:700; font-size:14.5px; cursor:pointer; font-family:'Work Sans',sans-serif;
+    transition:opacity .15s ease;
+  }
+  .btn:active{ opacity:0.75; }
+  .btn-primary{ background:var(--moss-dark); color:var(--paper); }
+  .btn-gold{ background:var(--gold); color:#fff; }
+  .btn-outline{ background:none; border:1.5px solid var(--danger); color:var(--danger); }
+  .btn-ghost{ background:var(--mist); color:var(--moss-dark); }
+
+  .stepper{ display:flex; align-items:center; gap:10px; }
+  .stepper button{
+    width:28px;height:28px;border-radius:50%;border:1.5px solid var(--mist);
+    background:#fff; font-size:15px; cursor:pointer; color:var(--moss-dark);
+  }
+  .stepper span{ font-family:'JetBrains Mono',monospace; font-weight:500; min-width:18px; text-align:center; }
+
+  /* cart */
+  .cart-row{ display:flex; align-items:center; gap:12px; padding:12px 0; border-bottom:1px solid #E4E0D0; }
+  .cart-row .liquor{ width:40px;height:40px; }
+  .cart-row-info{ flex:1; }
+  .cart-row-name{ font-weight:600; font-size:14px; }
+  .cart-row-price{ font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--clay); margin-top:2px;}
+  .remove-x{ background:none;border:none; color:#B4ADA0; font-size:16px; cursor:pointer; }
+
+  .summary{ margin-top:16px; padding-top:14px; border-top:1.5px dashed #D8D3C0; }
+  .summary-row{ display:flex; justify-content:space-between; font-size:13.5px; margin-bottom:8px; color:#5C6B5D; }
+  .summary-row.total{ color:var(--ink); font-weight:700; font-size:16px; font-family:'Fraunces',serif; }
+
+  /* admin */
+  .admin-header{ display:flex; justify-content:space-between; align-items:center; margin:10px 0 14px 0;}
+  .admin-row{
+    display:flex; align-items:center; gap:12px; background:var(--card);
+    border:1px solid #E4E0D0; border-radius:16px; padding:10px 12px; margin-bottom:9px;
+  }
+  .admin-row .liquor{ width:36px;height:36px; }
+  .admin-actions{ display:flex; gap:6px; }
+  .icon-btn{
+    width:30px;height:30px;border-radius:8px; border:none; background:var(--mist);
+    color:var(--moss-dark); cursor:pointer; font-size:13px; display:flex;align-items:center;justify-content:center;
+  }
+  .icon-btn.danger{ background:#F3DDD7; color:var(--danger); }
+
+  .fab{
+    position:absolute; right:20px; bottom:96px; z-index:16;
+    width:52px;height:52px;border-radius:50%; background:var(--gold); color:#fff;
+    border:none; font-size:26px; box-shadow:0 10px 20px -6px rgba(192,144,63,0.6); cursor:pointer;
+  }
+
+  .lock-screen{ padding-top:110px; text-align:center; }
+  .lock-screen .glyph{ font-size:38px; margin-bottom:14px; color:var(--moss-dark); }
+  .pin-dots{ display:flex; justify-content:center; gap:10px; margin:18px 0; }
+  .pin-dots div{ width:12px;height:12px;border-radius:50%; border:1.5px solid var(--moss); background:transparent;}
+  .pin-dots div.filled{ background:var(--moss-dark); }
+  .keypad{ display:grid; grid-template-columns:repeat(3,1fr); gap:12px; max-width:230px; margin:0 auto; }
+  .keypad button{
+    aspect-ratio:1; border-radius:50%; border:1px solid var(--mist); background:#fff;
+    font-size:18px; font-family:'JetBrains Mono',monospace; color:var(--ink); cursor:pointer;
+  }
+  .keypad button:active{ background:var(--mist); }
+  .hint{ font-size:11px; color:#93A091; margin-top:8px; }
+
+  .toast{
+    position:absolute; top:44px; left:20px; right:20px; z-index:40;
+    background:var(--moss-dark); color:var(--paper); padding:12px 16px; border-radius:12px;
+    font-size:13px; font-weight:600; text-align:center;
+    box-shadow:0 10px 24px -8px rgba(0,0,0,0.35);
+    opacity:0; transform:translateY(-10px); transition:all .25s ease; pointer-events:none;
+  }
+  .toast.show{ opacity:1; transform:translateY(0); }
+
+  .order-success{ text-align:center; padding:30px 10px 10px 10px; }
+  .order-success .check{
+    width:64px;height:64px;border-radius:50%; background:var(--moss-dark); color:var(--paper);
+    display:flex;align-items:center;justify-content:center; margin:0 auto 16px auto; font-size:30px;
+  }
+  .order-num{ font-family:'JetBrains Mono',monospace; color:var(--clay); font-size:13px; margin:6px 0 20px 0;}
+</style>
+</head>
+<body>
+
+<div class="device">
+  <div class="notch"></div>
+  <div class="statusbar">
+    <span id="clock">9:41</span>
+    <span>STEEP &amp; CO.</span>
+    <span>100%</span>
+  </div>
+
+  <div class="screen" id="screen"></div>
+
+  <div class="navbar">
+    <div class="navitem active" data-tab="shop" onclick="setTab('shop')">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 14c0-6 4-10 10-10 4 0 6 2 6 6 0 6-6 10-12 10-2 0-4-1-4-3z"/><path d="M8 20c1-4 3-9 9-13"/></svg>
+      <span>Shop</span>
+    </div>
+    <div class="navitem" data-tab="cart" onclick="setTab('cart')" style="position:relative;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 8h14l-1.5 10a2 2 0 0 1-2 1.7H8.5a2 2 0 0 1-2-1.7L5 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>
+      <span>Cart</span>
+      <div class="badge" id="cart-badge" style="display:none;">0</div>
+    </div>
+    <div class="navitem" data-tab="admin" onclick="setTab('admin')">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15 1.65 1.65 0 0 0 3 14H2.91a2 2 0 0 1 0-4H3a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09A1.65 1.65 0 0 0 15 4.6a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      <span>Admin</span>
+    </div>
+  </div>
+
+  <div class="fab" id="fab" style="display:none;" onclick="openTeaForm()">+</div>
+
+  <div class="toast" id="toast"></div>
+
+  <div class="sheet-backdrop" id="sheet-backdrop" onclick="closeSheet()"></div>
+  <div class="sheet" id="sheet"></div>
+</div>
+
+<script>
+/* ---------------- state ---------------- */
+let teas = [];
+let cart = {};            // teaId -> qty
+let activeTab = 'shop';
+let activeCategory = 'All';
+let adminUnlocked = false;
+let pinBuffer = '';
+const ADMIN_PIN = '1234';
+let editingTeaId = null;
+
+const CATEGORIES = ['Green','White','Oolong','Black','Herbal','Pu-erh'];
+
+const SEED_TEAS = [
+  {id:'t1', name:'Dragon Well', category:'Green', origin:'Hangzhou, China', price:8.50, stock:24, steepTime:'2–3 min', steepTemp:'75°C', liquorColor:'#C9D6A0', description:'A pan-fired green tea with a flat leaf and a toasted-chestnut sweetness. Bright and clean in the cup.'},
+  {id:'t2', name:'Silver Needle', category:'White', origin:'Fujian, China', price:12.00, stock:14, steepTime:'4–5 min', steepTemp:'80°C', liquorColor:'#F2E7C4', description:'Whole downy buds, barely processed. Delicate, honeyed, and quiet — the lightest tea in the shop.'},
+  {id:'t3', name:'Ti Kuan Yin', category:'Oolong', origin:'Anxi, China', price:10.50, stock:19, steepTime:'3 min', steepTemp:'90°C', liquorColor:'#E7C463', description:'Rolled oolong with an orchid aroma and a long, creamy finish. Good for multiple steeps.'},
+  {id:'t4', name:'Assam Breakfast', category:'Black', origin:'Assam, India', price:7.00, stock:31, steepTime:'4 min', steepTemp:'95°C', liquorColor:'#8A3D1E', description:'Malty and full-bodied, built to take milk. The house wake-up cup.'},
+  {id:'t5', name:'Earl Grey Reserve', category:'Black', origin:'Ceylon, blended', price:9.00, stock:22, steepTime:'3–4 min', steepTemp:'95°C', liquorColor:'#6A392A', description:'Ceylon black scented with bergamot oil and a trace of cornflower. Citrus-forward, not soapy.'},
+  {id:'t6', name:'Jasmine Pearl', category:'Green', origin:'Fujian, China', price:11.00, stock:0, steepTime:'2–3 min', steepTemp:'80°C', liquorColor:'#D7DC9F', description:'Hand-rolled green pearls scented over jasmine blossom nightly for a week. Perfumed, never bitter.'},
+  {id:'t7', name:'Chamomile Bloom', category:'Herbal', origin:'Nile Delta, Egypt', price:6.50, stock:27, steepTime:'5 min', steepTemp:'100°C', liquorColor:'#E9C359', description:'Whole dried chamomile flowers, apple-sweet and calming. Caffeine-free.'},
+  {id:'t8', name:'Rooibos Sunset', category:'Herbal', origin:'Cederberg, South Africa', price:6.00, stock:18, steepTime:'6 min', steepTemp:'100°C', liquorColor:'#A8461E', description:'Red bush tea with notes of vanilla and dried fig. Naturally sweet, caffeine-free.'},
+  {id:'t9', name:'Aged Pu-erh', category:'Pu-erh', origin:'Yunnan, China', price:14.00, stock:9, steepTime:'3 min', steepTemp:'100°C', liquorColor:'#4A2C1D', description:'Compressed and fermented for depth — earthy, smooth, almost cocoa-like after a decade of aging.'}
+];
+
+/* ---------------- storage helpers ---------------- */
+async function loadTeas(){
+  try{
+    const res = await window.storage.get('teas', true);
+    teas = JSON.parse(res.value);
+  }catch(e){
+    teas = SEED_TEAS;
+    try{ await window.storage.set('teas', JSON.stringify(teas), true); }catch(e2){ console.error('seed save failed', e2); }
+  }
+}
+async function saveTeas(){
+  try{ await window.storage.set('teas', JSON.stringify(teas), true); }
+  catch(e){ console.error('save failed', e); showToast('Could not save — try again'); }
+}
+
+/* ---------------- utils ---------------- */
+function fmt(n){ return '$' + n.toFixed(2); }
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 1800);
+}
+function cartCount(){ return Object.values(cart).reduce((a,b)=>a+b,0); }
+function updateCartBadge(){
+  const b = document.getElementById('cart-badge');
+  const c = cartCount();
+  b.style.display = c>0 ? 'flex' : 'none';
+  b.textContent = c;
+}
+
+/* ---------------- tab routing ---------------- */
+function setTab(tab){
+  activeTab = tab;
+  document.querySelectorAll('.navitem').forEach(el=>el.classList.toggle('active', el.dataset.tab===tab));
+  document.getElementById('fab').style.display = (tab==='admin' && adminUnlocked) ? 'flex' : 'none';
+  render();
+}
+
+/* ---------------- render root ---------------- */
+function render(){
+  const screen = document.getElementById('screen');
+  if(activeTab==='shop') screen.innerHTML = renderShop();
+  else if(activeTab==='cart') screen.innerHTML = renderCart();
+  else screen.innerHTML = adminUnlocked ? renderAdmin() : renderLock();
+  updateCartBadge();
+}
+
+/* ---------------- SHOP ---------------- */
+function renderShop(){
+  const list = teas.filter(t => activeCategory==='All' || t.category===activeCategory);
+  const chips = ['All', ...CATEGORIES].map(c =>
+    `<div class="chip ${c===activeCategory?'active':''}" onclick="filterCategory('${c}')">${c}</div>`
+  ).join('');
+
+  const cards = list.length ? list.map(t => `
+    <div class="tea-card" onclick="openTeaDetail('${t.id}')">
+      <div class="liquor" style="background:radial-gradient(circle at 35% 30%, ${lighten(t.liquorColor)}, ${t.liquorColor} 70%);"></div>
+      <div class="tea-info">
+        <div class="tea-name">${escapeHtml(t.name)}</div>
+        <div class="tea-origin">${escapeHtml(t.origin)}</div>
+        <div class="tea-meta">
+          <span class="tag">${t.category}</span>
+          <span class="price">${fmt(t.price)}</span>
+          ${t.stock===0 ? '<span class="stock-out">Sold out</span>' : ''}
+        </div>
+      </div>
+      ${t.stock>0 ? `<button class="add-btn" onclick="event.stopPropagation(); quickAdd('${t.id}')">+</button>` : ''}
+    </div>
+  `).join('') : `<div class="empty"><div class="glyph">﹆</div><h3>No leaves here</h3><p>Nothing in this category yet.<br>Try another blend of leaves.</p></div>`;
+
+  return `
+    <div class="brand"><div class="wordmark">Steep & Co.</div></div>
+    <div class="tagline">Loose-leaf tea, sourced &amp; steeped with care</div>
+    <div class="chips">${chips}</div>
+    <div>${cards}</div>
+  `;
+}
+function lighten(hex){
+  const n = parseInt(hex.slice(1),16);
+  let r=(n>>16)+40, g=((n>>8)&255)+40, b=(n&255)+40;
+  r=Math.min(255,r); g=Math.min(255,g); b=Math.min(255,b);
+  return `rgb(${r},${g},${b})`;
+}
+function filterCategory(c){ activeCategory=c; render(); }
+function quickAdd(id){
+  cart[id] = (cart[id]||0)+1;
+  updateCartBadge();
+  const t = teas.find(x=>x.id===id);
+  showToast(`Added ${t.name} to cart`);
+}
+
+function openTeaDetail(id){
+  const t = teas.find(x=>x.id===id);
+  if(!t) return;
+  const qtyInCart = cart[id]||0;
+  document.getElementById('sheet').innerHTML = `
+    <button class="sheet-close" onclick="closeSheet()">✕</button>
+    <div class="sheet-handle"></div>
+    <div class="liquor lg" style="background:radial-gradient(circle at 35% 30%, ${lighten(t.liquorColor)}, ${t.liquorColor} 70%);"></div>
+    <div style="text-align:center;">
+      <div class="tea-name" style="font-size:20px;">${escapeHtml(t.name)}</div>
+      <div class="tea-origin" style="margin-bottom:8px;">${escapeHtml(t.origin)}</div>
+      <span class="tag">${t.category}</span>
+    </div>
+    <p style="font-size:13.5px; line-height:1.6; color:#4E5C4F; margin:16px 0;">${escapeHtml(t.description)}</p>
+    <div class="row2" style="margin-bottom:16px;">
+      <div class="field" style="text-align:center; background:var(--mist); border-radius:12px; padding:10px 0; margin:0;">
+        <label style="margin-bottom:2px;">Steep time</label>
+        <div style="font-family:'JetBrains Mono',monospace; font-weight:600;">${t.steepTime}</div>
+      </div>
+      <div class="field" style="text-align:center; background:var(--mist); border-radius:12px; padding:10px 0; margin:0;">
+        <label style="margin-bottom:2px;">Water temp</label>
+        <div style="font-family:'JetBrains Mono',monospace; font-weight:600;">${t.steepTemp}</div>
+      </div>
+    </div>
+    ${t.stock===0 ? `
+      <div style="text-align:center; color:var(--danger); font-weight:600; margin-bottom:10px;">Currently sold out</div>
+      <button class="btn btn-ghost" onclick="closeSheet()">Close</button>
+    ` : `
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
+        <span class="price" style="font-size:16px;">${fmt(t.price)}</span>
+        <div class="stepper">
+          <button onclick="detailStep('${t.id}',-1)">−</button>
+          <span id="detail-qty">${qtyInCart||1}</span>
+          <button onclick="detailStep('${t.id}',1)">+</button>
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="addFromDetail('${t.id}')">Add to cart</button>
+    `}
+  `;
+  document.getElementById('sheet-backdrop').classList.add('open');
+  document.getElementById('sheet').classList.add('open');
+}
+let detailQty = 1;
+function detailStep(id, d){
+  detailQty = Math.max(1, (parseInt(document.getElementById('detail-qty').textContent)||1) + d);
+  document.getElementById('detail-qty').textContent = detailQty;
+}
+function addFromDetail(id){
+  const q = parseInt(document.getElementById('detail-qty').textContent)||1;
+  cart[id] = (cart[id]||0) + q;
+  detailQty = 1;
+  updateCartBadge();
+  closeSheet();
+  const t = teas.find(x=>x.id===id);
+  showToast(`Added ${q} × ${t.name} to cart`);
+}
+function closeSheet(){
+  document.getElementById('sheet-backdrop').classList.remove('open');
+  document.getElementById('sheet').classList.remove('open');
+}
+
+/* ---------------- CART ---------------- */
+function renderCart(){
+  const ids = Object.keys(cart).filter(id=>cart[id]>0);
+  if(!ids.length){
+    return `
+      <div class="brand"><div class="wordmark">Your Cart</div></div>
+      <div class="empty">
+        <div class="glyph">﹆</div>
+        <h3>Cart's empty</h3>
+        <p>Nothing steeping yet.<br>Go pick a few leaves from the shop.</p>
+      </div>
+    `;
+  }
+  const rows = ids.map(id=>{
+    const t = teas.find(x=>x.id===id);
+    if(!t) return '';
+    return `
+      <div class="cart-row">
+        <div class="liquor" style="background:radial-gradient(circle at 35% 30%, ${lighten(t.liquorColor)}, ${t.liquorColor} 70%);"></div>
+        <div class="cart-row-info">
+          <div class="cart-row-name">${escapeHtml(t.name)}</div>
+          <div class="cart-row-price">${fmt(t.price)} each</div>
+          <div class="stepper" style="margin-top:6px;">
+            <button onclick="cartStep('${id}',-1)">−</button>
+            <span>${cart[id]}</span>
+            <button onclick="cartStep('${id}',1)">+</button>
+          </div>
+        </div>
+        <div style="text-align:right;">
+          <div class="price">${fmt(t.price*cart[id])}</div>
+          <button class="remove-x" onclick="cartRemove('${id}')">remove</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  const subtotal = ids.reduce((sum,id)=>{
+    const t = teas.find(x=>x.id===id);
+    return sum + (t? t.price*cart[id] : 0);
+  },0);
+  const shipping = subtotal > 0 ? 4.5 : 0;
+  const total = subtotal + shipping;
+
+  return `
+    <div class="brand"><div class="wordmark">Your Cart</div></div>
+    <div class="tagline">${ids.length} tea${ids.length>1?'s':''} selected</div>
+    <div>${rows}</div>
+    <div class="summary">
+      <div class="summary-row"><span>Subtotal</span><span>${fmt(subtotal)}</span></div>
+      <div class="summary-row"><span>Shipping</span><span>${fmt(shipping)}</span></div>
+      <div class="summary-row total"><span>Total</span><span>${fmt(total)}</span></div>
+      <button class="btn btn-gold" style="margin-top:14px;" onclick="placeOrder()">Place order</button>
+      <div class="hint" style="text-align:center;">Demo checkout — no payment is processed.</div>
+    </div>
+  `;
+}
+function cartStep(id, d){
+  cart[id] = Math.max(0,(cart[id]||0)+d);
+  render();
+}
+function cartRemove(id){
+  delete cart[id];
+  render();
+}
+function placeOrder(){
+  const orderNum = 'STC-' + Math.floor(10000 + Math.random()*89999);
+  document.getElementById('sheet').innerHTML = `
+    <button class="sheet-close" onclick="finishOrder()">✕</button>
+    <div class="sheet-handle"></div>
+    <div class="order-success">
+      <div class="check">✓</div>
+      <div class="tea-name" style="font-size:19px;">Order placed</div>
+      <div class="order-num">${orderNum}</div>
+      <p style="font-size:13px; color:#5C6B5D; line-height:1.6;">This is a demo order — no payment was charged.<br>Your tea would ship in 2–3 business days.</p>
+      <button class="btn btn-primary" style="margin-top:10px;" onclick="finishOrder()">Back to shop</button>
+    </div>
+  `;
+  document.getElementById('sheet-backdrop').classList.add('open');
+  document.getElementById('sheet').classList.add('open');
+}
+function finishOrder(){
+  cart = {};
+  closeSheet();
+  setTab('shop');
+}
+
+/* ---------------- ADMIN ---------------- */
+function renderLock(){
+  const dots = [0,1,2,3].map(i=>`<div class="${i<pinBuffer.length?'filled':''}"></div>`).join('');
+  return `
+    <div class="lock-screen">
+      <div class="glyph">🔒</div>
+      <div class="tea-name" style="font-size:18px;">Admin access</div>
+      <div class="pin-dots">${dots}</div>
+      <div class="keypad">
+        ${[1,2,3,4,5,6,7,8,9].map(n=>`<button onclick="pinPress('${n}')">${n}</button>`).join('')}
+        <div></div>
+        <button onclick="pinPress('0')">0</button>
+        <button onclick="pinBackspace()">⌫</button>
+      </div>
+      <div class="hint">Demo PIN: 1234</div>
+    </div>
+  `;
+}
+function pinPress(d){
+  if(pinBuffer.length>=4) return;
+  pinBuffer += d;
+  if(pinBuffer.length===4){
+    if(pinBuffer===ADMIN_PIN){
+      adminUnlocked = true;
+      pinBuffer='';
+      setTab('admin');
+      showToast('Admin unlocked');
+    } else {
+      showToast('Incorrect PIN');
+      setTimeout(()=>{ pinBuffer=''; render(); }, 350);
+    }
+  }
+  render();
+}
+function pinBackspace(){ pinBuffer = pinBuffer.slice(0,-1); render(); }
+
+function renderAdmin(){
+  const rows = teas.map(t=>`
+    <div class="admin-row">
+      <div class="liquor" style="background:radial-gradient(circle at 35% 30%, ${lighten(t.liquorColor)}, ${t.liquorColor} 70%);"></div>
+      <div class="tea-info">
+        <div class="tea-name" style="font-size:14.5px;">${escapeHtml(t.name)}</div>
+        <div class="tea-meta" style="margin-top:3px;">
+          <span class="tag">${t.category}</span>
+          <span class="price">${fmt(t.price)}</span>
+          <span style="font-size:11px; color:${t.stock===0?'var(--danger)':'#6B7A6C'};">· ${t.stock} in stock</span>
+        </div>
+      </div>
+      <div class="admin-actions">
+        <button class="icon-btn" onclick="openTeaForm('${t.id}')">✎</button>
+        <button class="icon-btn danger" onclick="confirmDelete('${t.id}')">🗑</button>
+      </div>
+    </div>
+  `).join('');
+
+  return `
+    <div class="admin-header">
+      <div class="wordmark" style="font-size:22px;">Manage teas</div>
+      <button class="icon-btn" title="Lock" onclick="lockAdmin()">🔒</button>
+    </div>
+    <div class="tagline">${teas.length} teas in the catalog</div>
+    ${teas.length? rows : `<div class="empty"><div class="glyph">﹆</div><h3>Catalog is empty</h3><p>Tap the + button to add your first tea.</p></div>`}
+  `;
+}
+function lockAdmin(){
+  adminUnlocked = false;
+  document.getElementById('fab').style.display='none';
+  render();
+}
+
+function openTeaForm(id){
+  editingTeaId = id || null;
+  const t = id ? teas.find(x=>x.id===id) : {name:'',category:'Green',origin:'',price:'',stock:'',steepTime:'',steepTemp:'',liquorColor:'#C9D6A0',description:''};
+  document.getElementById('sheet').innerHTML = `
+    <button class="sheet-close" onclick="closeSheet()">✕</button>
+    <div class="sheet-handle"></div>
+    <div class="tea-name" style="font-size:18px; margin-bottom:14px;">${id? 'Edit tea' : 'Add a tea'}</div>
+    <div class="field"><label>Name</label><input id="f-name" value="${escapeAttr(t.name)}" placeholder="Dragon Well"></div>
+    <div class="row2">
+      <div class="field"><label>Category</label>
+        <select id="f-category">${CATEGORIES.map(c=>`<option value="${c}" ${c===t.category?'selected':''}>${c}</option>`).join('')}</select>
+      </div>
+      <div class="field"><label>Origin</label><input id="f-origin" value="${escapeAttr(t.origin)}" placeholder="Hangzhou, China"></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label>Price (USD)</label><input id="f-price" type="number" step="0.01" value="${t.price}" placeholder="8.50"></div>
+      <div class="field"><label>Stock</label><input id="f-stock" type="number" value="${t.stock}" placeholder="24"></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label>Steep time</label><input id="f-time" value="${escapeAttr(t.steepTime)}" placeholder="2–3 min"></div>
+      <div class="field"><label>Water temp</label><input id="f-temp" value="${escapeAttr(t.steepTemp)}" placeholder="80°C"></div>
+    </div>
+    <div class="field"><label>Liquor color</label>
+      <input id="f-color" type="color" value="${t.liquorColor}" style="height:40px; padding:4px;">
+    </div>
+    <div class="field"><label>Description</label><textarea id="f-desc" placeholder="Tasting notes...">${escapeHtml(t.description)}</textarea></div>
+    <button class="btn btn-primary" onclick="saveTeaForm()">${id? 'Save changes' : 'Add tea'}</button>
+  `;
+  document.getElementById('sheet-backdrop').classList.add('open');
+  document.getElementById('sheet').classList.add('open');
+}
+
+async function saveTeaForm(){
+  const name = document.getElementById('f-name').value.trim();
+  const price = parseFloat(document.getElementById('f-price').value);
+  if(!name){ showToast('Tea needs a name'); return; }
+  if(isNaN(price) || price < 0){ showToast('Enter a valid price'); return; }
+
+  const data = {
+    name,
+    category: document.getElementById('f-category').value,
+    origin: document.getElementById('f-origin').value.trim(),
+    price: price,
+    stock: Math.max(0, parseInt(document.getElementById('f-stock').value)||0),
+    steepTime: document.getElementById('f-time').value.trim(),
+    steepTemp: document.getElementById('f-temp').value.trim(),
+    liquorColor: document.getElementById('f-color').value,
+    description: document.getElementById('f-desc').value.trim()
+  };
+
+  if(editingTeaId){
+    const idx = teas.findIndex(t=>t.id===editingTeaId);
+    if(idx>-1) teas[idx] = {...teas[idx], ...data};
+    showToast('Tea updated');
+  } else {
+    data.id = 't' + Date.now();
+    teas.push(data);
+    showToast('Tea added');
+  }
+  await saveTeas();
+  editingTeaId = null;
+  closeSheet();
+  render();
+}
+
+function confirmDelete(id){
+  const t = teas.find(x=>x.id===id);
+  document.getElementById('sheet').innerHTML = `
+    <button class="sheet-close" onclick="closeSheet()">✕</button>
+    <div class="sheet-handle"></div>
+    <div class="tea-name" style="font-size:17px; margin-bottom:8px;">Delete ${escapeHtml(t.name)}?</div>
+    <p style="font-size:13px; color:#6B7A6C; margin-bottom:18px;">This removes it from the catalog for everyone. This can't be undone.</p>
+    <button class="btn btn-outline" style="margin-bottom:10px;" onclick="deleteTea('${id}')">Delete tea</button>
+    <button class="btn btn-ghost" onclick="closeSheet()">Cancel</button>
+  `;
+  document.getElementById('sheet-backdrop').classList.add('open');
+  document.getElementById('sheet').classList.add('open');
+}
+async function deleteTea(id){
+  teas = teas.filter(t=>t.id!==id);
+  await saveTeas();
+  closeSheet();
+  showToast('Tea deleted');
+  render();
+}
+
+/* ---------------- helpers ---------------- */
+function escapeHtml(str){
+  return (str||'').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+function escapeAttr(str){ return escapeHtml(str); }
+
+/* ---------------- clock ---------------- */
+function tickClock(){
+  const d = new Date();
+  let h = d.getHours()%12; if(h===0) h=12;
+  const m = d.getMinutes().toString().padStart(2,'0');
+  document.getElementById('clock').textContent = `${h}:${m}`;
+}
+tickClock(); setInterval(tickClock, 15000);
+
+/* ---------------- boot ---------------- */
+(async function init(){
+  document.getElementById('screen').innerHTML = `<div class="empty" style="padding-top:140px;"><div class="glyph">﹆</div><h3>Steeping...</h3><p>Loading the catalog.</p></div>`;
+  await loadTeas();
+  render();
+})();
+</script>
+</body>
+</html>
